@@ -18,14 +18,21 @@ def call(String aws_account_id, String region, String ecr_repoName){
     withCredentials([
         string(credentialsId: 'AWS_Access_key', variable: 'AWS_Access_Key'), 
         string(credentialsId: 'AWS_Secret_Access_Key', variable: 'AWS_Secret_Access_Key')
-    ])
+    ]) {
+        sh """
+        aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${aws_account_id}.dkr.ecr.${region}.amazonaws.com
+        docker push ${aws_account_id}.dkr.ecr.${region}.amazonaws.com/${ecr_repoName}:latest  
+        """
+    }
+}
 
-    sh """
-     aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${aws_account_id}.dkr.ecr.${region}.amazonaws.com
-     docker push ${aws_account_id}.dkr.ecr.${region}.amazonaws.com/${ecr_repoName}:latest
+
+//    sh """
+//     aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${aws_account_id}.dkr.ecr.${region}.amazonaws.com
+//     docker push ${aws_account_id}.dkr.ecr.${region}.amazonaws.com/${ecr_repoName}:latest
      
-    """
-}    
+//    """
+//}    
     
     
 //    sh """
